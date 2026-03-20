@@ -1,0 +1,55 @@
+<div class="auth-page">
+  <div class="auth-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <h1>Welcome Back</h1>
+        <p>Sign in to your expense tracker</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email Address</mat-label>
+          <mat-icon matPrefix>email</mat-icon>
+          <input matInput formControlName="email" type="email" placeholder="you@example.com" id="login-email" />
+          <mat-error *ngIf="loginForm.get('email')?.hasError('required')">Email is required</mat-error>
+          <mat-error *ngIf="loginForm.get('email')?.hasError('email')">Enter a valid email</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
+          <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" placeholder="••••••••" id="login-password" />
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="loginForm.get('password')?.hasError('required')">Password is required</mat-error>
+          <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">Minimum 6 characters</mat-error>
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          type="submit"
+          class="submit-btn"
+          [disabled]="loginForm.invalid || loading"
+          id="login-submit"
+        >
+          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+          <span *ngIf="!loading">Sign In</span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Don't have an account? <a routerLink="/auth/register">Create one</a></p>
+      </div>
+    </div>
+  </div>
+</div>

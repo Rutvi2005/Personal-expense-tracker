@@ -1,0 +1,94 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>My Expenses</h1>
+      <p>Track and manage all your expenses</p>
+    </div>
+    <a mat-raised-button routerLink="/expenses/add" class="add-btn" id="add-expense-link">
+      <mat-icon>add</mat-icon> Add Expense
+    </a>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-card">
+    <div class="filters-row">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Category</mat-label>
+        <mat-select [formControl]="categoryFilter" (selectionChange)="applyFilters()" id="filter-category">
+          <mat-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Start Date</mat-label>
+        <input matInput type="date" [formControl]="startDateFilter" (change)="applyFilters()" id="filter-start-date" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>End Date</mat-label>
+        <input matInput type="date" [formControl]="endDateFilter" (change)="applyFilters()" id="filter-end-date" />
+      </mat-form-field>
+
+      <button mat-stroked-button class="reset-btn" (click)="resetFilters()" id="reset-filters">
+        <mat-icon>refresh</mat-icon> Reset
+      </button>
+    </div>
+
+    <div class="filter-summary">
+      <span class="count">{{ filteredExpenses.length }} expense(s)</span>
+      <span class="total">Total: <strong>₹{{ totalAmount | number:'1.2-2' }}</strong></span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div *ngIf="loading" class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && filteredExpenses.length === 0" class="empty-state">
+      <mat-icon>receipt_long</mat-icon>
+      <h3>No expenses found</h3>
+      <p>Try adjusting your filters or add a new expense</p>
+    </div>
+
+    <table mat-table [dataSource]="filteredExpenses" *ngIf="!loading && filteredExpenses.length > 0" class="expense-table">
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let e">{{ e.date | date:'MMM d, yyyy' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let e">{{ e.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>Category</th>
+        <td mat-cell *matCellDef="let e">
+          <span class="category-chip">{{ e.category }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef>Amount</th>
+        <td mat-cell *matCellDef="let e" class="amount-cell">₹{{ e.amount | number:'1.2-2' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let e" class="actions-cell">
+          <button mat-icon-button class="edit-btn" (click)="editExpense(e.id)" matTooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button class="delete-btn" (click)="deleteExpense(e.id)" matTooltip="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+<!-- Auth pages: full-screen, no layout chrome -->
+<ng-container *ngIf="isAuthPage">
+  <router-outlet></router-outlet>
+</ng-container>
+
+<!-- App pages: sidebar + navbar + content -->
+<ng-container *ngIf="!isAuthPage">
+  <app-sidebar></app-sidebar>
+  <div class="app-layout">
+    <app-navbar></app-navbar>
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</ng-container>

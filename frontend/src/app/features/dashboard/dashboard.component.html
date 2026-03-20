@@ -1,0 +1,132 @@
+<div class="dashboard-page">
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading your data...</p>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <!-- Greeting -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Hey, {{ user?.fullName || 'there' }} 👋</h1>
+        <p class="page-subtitle">Here's your financial overview</p>
+      </div>
+      <a mat-raised-button routerLink="/expenses/add" class="add-btn">
+        <mat-icon>add</mat-icon> Add Expense
+      </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon icon-purple">
+          <mat-icon>calendar_today</mat-icon>
+        </div>
+        <div class="stat-body">
+          <span class="stat-label">This Month</span>
+          <span class="stat-value">₹{{ totalThisMonth | number:'1.2-2' }}</span>
+          <span class="stat-change" [class.positive]="monthlyChange >= 0" [class.negative]="monthlyChange < 0">
+            <mat-icon>{{ monthlyChange >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+            {{ monthlyChange >= 0 ? '+' : '' }}{{ monthlyChange }}% vs last month
+          </span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-blue">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <div class="stat-body">
+          <span class="stat-label">Total Expenses</span>
+          <span class="stat-value">{{ expenses.length }}</span>
+          <span class="stat-sub">All time records</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-green">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="stat-body">
+          <span class="stat-label">Avg. per Expense</span>
+          <span class="stat-value">₹{{ avgExpense | number:'1.2-2' }}</span>
+          <span class="stat-sub">Average amount</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-orange">
+          <mat-icon>category</mat-icon>
+        </div>
+        <div class="stat-body">
+          <span class="stat-label">Top Category</span>
+          <span class="stat-value top-cat">{{ topCategory || '—' }}</span>
+          <span class="stat-sub">Highest spending</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <div class="chart-card wide">
+        <div class="chart-header">
+          <h2>Monthly Trends</h2>
+          <span class="chart-sub">Last 6 months spending</span>
+        </div>
+        <canvas baseChart
+          [data]="barChartData"
+          [options]="barOptions"
+          type="bar">
+        </canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2>By Category</h2>
+          <span class="chart-sub">Spending breakdown</span>
+        </div>
+        <div *ngIf="expenses.length === 0" class="empty-chart">
+          <mat-icon>pie_chart</mat-icon>
+          <p>No data yet</p>
+        </div>
+        <canvas *ngIf="expenses.length > 0" baseChart
+          [data]="doughnutChartData"
+          [options]="doughnutOptions"
+          type="doughnut">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Recent Expenses -->
+    <div class="recent-card">
+      <div class="recent-header">
+        <h2>Recent Expenses</h2>
+        <a routerLink="/expenses/list" class="view-all">View all <mat-icon>arrow_forward</mat-icon></a>
+      </div>
+
+      <div *ngIf="recentExpenses.length === 0" class="empty-recent">
+        <mat-icon>receipt</mat-icon>
+        <p>No expenses yet. <a routerLink="/expenses/add">Add your first one!</a></p>
+      </div>
+
+      <div class="expense-list" *ngIf="recentExpenses.length > 0">
+        <div class="expense-item" *ngFor="let exp of recentExpenses">
+          <div class="exp-left">
+            <div class="exp-icon">
+              <mat-icon>{{ getCategoryIcon(exp.category) }}</mat-icon>
+            </div>
+            <div class="exp-info">
+              <span class="exp-desc">{{ exp.description || exp.category }}</span>
+              <span class="exp-cat">{{ exp.category }}</span>
+            </div>
+          </div>
+          <div class="exp-right">
+            <span class="exp-amount">-₹{{ exp.amount | number:'1.2-2' }}</span>
+            <span class="exp-date">{{ exp.date | date:'MMM d' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
